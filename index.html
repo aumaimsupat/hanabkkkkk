@@ -186,10 +186,10 @@
                 <i class="fa-solid fa-print text-[15rem]"></i>
             </div>
             <div class="relative z-10">
-                <span class="bg-hana-accent text-hana-dark px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">Hana BKK Order Printer v2</span>
-                <h2 class="text-2xl md:text-3xl font-bold mt-2">ระบบขออนุมัติสั่งของและสรุปรายงานรายวัน</h2>
+                <span class="bg-hana-accent text-hana-dark px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">Hana BKK Order Printer v3 (Price Calculator)</span>
+                <h2 class="text-2xl md:text-3xl font-bold mt-2">ระบบขออนุมัติสั่งของและคำนวณราคาสรุปรายวัน</h2>
                 <p class="text-hana-light text-sm md:text-base mt-2 max-w-3xl">
-                    กรอกข้อมูลสินค้าเพื่อจัดเก็บข้อมูล และสั่งแก้ไขหรือลบได้อิสระ พร้อมระบบ **รวมรายงานสั่งซื้อเป็นรายวัน** เพื่อจัดพิมพ์ตารางใบเบิกพัสดุรวมพร้อมกันในหน้าเดียว
+                    กรอกข้อมูลสินค้าและราคาเพื่อจัดเก็บข้อมูล และสั่งแก้ไขหรือลบได้อิสระ พร้อมระบบคำนวณเงินอัจฉริยะในตัว และระบบ **รวมรายงานสั่งซื้อเป็นรายวัน** เพื่อจัดพิมพ์เป็นใบเบิกพัสดุ
                 </p>
             </div>
         </div>
@@ -279,9 +279,9 @@
                                     </div>
                                     <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
                                         <!-- Item Name -->
-                                        <div class="md:col-span-5">
+                                        <div class="md:col-span-4">
                                             <label class="block text-xs font-semibold text-hana-primary mb-1">ชื่อสินค้า / สิ่งของที่ต้องการ <span class="text-red-500">*</span></label>
-                                            <input type="text" required placeholder="ระบุชื่อสิ่งของ เช่น แชมพูสระผม, ทิชชู่ม้วน" 
+                                            <input type="text" required placeholder="ระบุชื่อสิ่งของ เช่น แชมพูสระผม" 
                                                    class="item-name w-full px-3 py-2 rounded-lg border border-hana-light focus:outline-none focus:ring-1 focus:ring-hana-primary bg-white text-sm">
                                         </div>
                                         <!-- Category Dropdown -->
@@ -296,7 +296,7 @@
                                             </select>
                                         </div>
                                         <!-- Quantity -->
-                                        <div class="md:col-span-2">
+                                        <div class="md:col-span-1">
                                             <label class="block text-xs font-semibold text-hana-primary mb-1">จำนวน <span class="text-red-500">*</span></label>
                                             <input type="number" required min="1" value="1" 
                                                    class="item-qty w-full px-3 py-2 rounded-lg border border-hana-light focus:outline-none focus:ring-1 focus:ring-hana-primary bg-white text-sm text-center">
@@ -304,8 +304,14 @@
                                         <!-- Unit -->
                                         <div class="md:col-span-2">
                                             <label class="block text-xs font-semibold text-hana-primary mb-1">หน่วยเรียก <span class="text-red-500">*</span></label>
-                                            <input type="text" required placeholder="ชิ้น/ขวด/กล่อง" 
+                                            <input type="text" required placeholder="ชิ้น/ขวด" 
                                                    class="item-unit w-full px-3 py-2 rounded-lg border border-hana-light focus:outline-none focus:ring-1 focus:ring-hana-primary bg-white text-sm text-center">
+                                        </div>
+                                        <!-- Price -->
+                                        <div class="md:col-span-2">
+                                            <label class="block text-xs font-semibold text-hana-primary mb-1">ราคา/หน่วย (บาท) <span class="text-red-500">*</span></label>
+                                            <input type="number" step="any" min="0" required placeholder="0.00" 
+                                                   class="item-price w-full px-3 py-2 rounded-lg border border-hana-light focus:outline-none focus:ring-1 focus:ring-hana-primary bg-white text-sm text-center">
                                         </div>
                                     </div>
                                     <!-- Remarks (Optional) -->
@@ -413,7 +419,7 @@
                                 <i class="fa-solid fa-calendar-days text-hana-primary"></i>
                                 <span>พิมพ์รวมใบขออนุมัติรายวัน</span>
                             </h3>
-                            <p class="text-xs text-gray-500 mt-1">ระบบคัดแยกและรวมออเดอร์ของพนักงานทุกคนตามวันให้อัตโนมัติ เพื่อพิมพ์ใบสรุปในครั้งเดียว</p>
+                            <p class="text-xs text-gray-500 mt-1">ระบบคัดแยกและรวมออเดอร์ของพนักงานทุกคนตามวันให้อัตโนมัติ เพื่อพิมพ์ใบสรุปเงินในครั้งเดียว</p>
                         </div>
 
                         <!-- Date Groups Container -->
@@ -481,7 +487,7 @@
     <!-- ==================== PRINT PREVIEW MODAL (HTML SIMULATOR) ==================== -->
     <div id="previewModal" class="fixed inset-0 bg-black/75 z-50 hidden flex flex-col items-center justify-center p-4 overflow-y-auto no-print">
         <!-- Modal Toolbar -->
-        <div class="bg-hana-dark text-white max-w-4xl w-full p-4 rounded-t-2xl shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-hana-primary">
+        <div class="bg-hana-dark text-white max-w-5xl w-full p-4 rounded-t-2xl shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-hana-primary">
             <div class="flex items-center space-x-3">
                 <div class="w-8 h-8 rounded-full bg-hana-accent text-hana-dark flex items-center justify-center font-bold">
                     <i class="fa-solid fa-magnifying-glass"></i>
@@ -503,9 +509,9 @@
         </div>
 
         <!-- Modal Simulated paper sheet container -->
-        <div class="bg-gray-100 max-w-4xl w-full p-6 sm:p-12 overflow-x-auto rounded-b-2xl shadow-2xl flex justify-center">
+        <div class="bg-gray-100 max-w-5xl w-full p-6 sm:p-12 overflow-x-auto rounded-b-2xl shadow-2xl flex justify-center">
             <!-- Simulated Page Sheet (A4 ratio simulator) -->
-            <div class="bg-white text-black p-8 sm:p-12 shadow-md w-[800px] border border-gray-300 min-h-[1050px] flex flex-col justify-between" id="simulated-paper-content">
+            <div class="bg-white text-black p-8 sm:p-12 shadow-md w-[850px] border border-gray-300 min-h-[1150px] flex flex-col justify-between" id="simulated-paper-content">
                 <!-- Injected dynamically by preview generators -->
             </div>
         </div>
@@ -520,7 +526,7 @@
 
     <!-- ==================== CORE APPLICATION LOGIC SCRIPT ==================== -->
     <script>
-        // Default historical orders in memory
+        // Default historical orders in memory (with default price data)
         let ordersHistory = [
             {
                 id: 1,
@@ -528,8 +534,8 @@
                 requesterName: "คุณมินตรา สมใจ",
                 department: "Salon",
                 items: [
-                    { itemName: "ครีมย้อมผมสีสว่างพิเศษ 09", category: "ร้านเสริมสวย", quantity: 5, unit: "กล่อง", remarks: "ใช้วันเสาร์นี้" },
-                    { itemName: "กระดาษฟอยล์สำหรับไฮไลท์ผม", category: "ร้านเสริมสวย", quantity: 2, unit: "ม้วน", remarks: "แบรนด์มาตรฐาน" }
+                    { itemName: "ครีมย้อมผมสีสว่างพิเศษ 09", category: "ร้านเสริมสวย", quantity: 5, unit: "กล่อง", price: 180, remarks: "ใช้วันเสาร์นี้" },
+                    { itemName: "กระดาษฟอยล์สำหรับไฮไลท์ผม", category: "ร้านเสริมสวย", quantity: 2, unit: "ม้วน", price: 350, remarks: "แบรนด์มาตรฐาน" }
                 ]
             },
             {
@@ -538,7 +544,7 @@
                 requesterName: "คุณสมพงษ์ สะอาดดี",
                 department: "Housekeeping",
                 items: [
-                    { itemName: "น้ำยาล้างห้องน้ำเกรดพรีเมียม 5L", category: "อุปกรณ์ทำความสะอาด", quantity: 3, unit: "แกลลอน", remarks: "ขอแบบมีกลิ่นลาเวนเดอร์" }
+                    { itemName: "น้ำยาล้างห้องน้ำเกรดพรีเมียม 5L", category: "อุปกรณ์ทำความสะอาด", quantity: 3, unit: "แกลลอน", price: 420, remarks: "ขอแบบมีกลิ่นลาเวนเดอร์" }
                 ]
             }
         ];
@@ -605,6 +611,7 @@
             const catVal = data ? data.category : '';
             const qtyVal = data ? data.quantity : 1;
             const unitVal = data ? data.unit : '';
+            const priceVal = data ? data.price : '';
             const remVal = data ? data.remarks : '';
 
             div.innerHTML = `
@@ -614,7 +621,7 @@
                     </button>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
-                    <div class="md:col-span-5">
+                    <div class="md:col-span-4">
                         <label class="block text-xs font-semibold text-hana-primary mb-1">ชื่อสินค้า / สิ่งของที่ต้องการ <span class="text-red-500">*</span></label>
                         <input type="text" required placeholder="ระบุชื่อสิ่งของ เช่น แชมพูสระผม, ทิชชู่ม้วน" value="${nameVal}"
                                class="item-name w-full px-3 py-2 rounded-lg border border-hana-light focus:outline-none focus:ring-1 focus:ring-hana-primary bg-white text-sm">
@@ -629,15 +636,20 @@
                             <option value="อื่นๆ" ${catVal === 'อื่นๆ' ? 'selected' : ''}>อื่นๆ</option>
                         </select>
                     </div>
-                    <div class="md:col-span-2">
+                    <div class="md:col-span-1">
                         <label class="block text-xs font-semibold text-hana-primary mb-1">จำนวน <span class="text-red-500">*</span></label>
                         <input type="number" required min="1" value="${qtyVal}" 
                                class="item-qty w-full px-3 py-2 rounded-lg border border-hana-light focus:outline-none focus:ring-1 focus:ring-hana-primary bg-white text-sm text-center">
                     </div>
                     <div class="md:col-span-2">
                         <label class="block text-xs font-semibold text-hana-primary mb-1">หน่วยเรียก <span class="text-red-500">*</span></label>
-                        <input type="text" required placeholder="ชิ้น/ขวด/กล่อง" value="${unitVal}"
+                        <input type="text" required placeholder="ชิ้น/ขวด" value="${unitVal}"
                                class="item-unit w-full px-3 py-2 rounded-lg border border-hana-light focus:outline-none focus:ring-1 focus:ring-hana-primary bg-white text-sm text-center">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-semibold text-hana-primary mb-1">ราคา/หน่วย (บาท) <span class="text-red-500">*</span></label>
+                        <input type="number" step="any" min="0" required placeholder="0.00" value="${priceVal}"
+                               class="item-price w-full px-3 py-2 rounded-lg border border-hana-light focus:outline-none focus:ring-1 focus:ring-hana-primary bg-white text-sm text-center">
                     </div>
                 </div>
                 <div class="mt-3">
@@ -688,11 +700,12 @@
             cards.forEach(card => {
                 const itemName = card.querySelector('.item-name').value.trim();
                 const category = card.querySelector('.item-category').value;
-                const quantity = parseInt(card.querySelector('.item-qty').value);
+                const quantity = parseInt(card.querySelector('.item-qty').value) || 1;
                 const unit = card.querySelector('.item-unit').value.trim();
+                const price = parseFloat(card.querySelector('.item-price').value) || 0;
                 const remarks = card.querySelector('.item-remarks').value.trim();
                 
-                items.push({ itemName, category, quantity, unit, remarks });
+                items.push({ itemName, category, quantity, unit, price, remarks });
             });
 
             if (items.length === 0) {
@@ -707,8 +720,7 @@
                     ordersHistory[index].requesterName = reqName;
                     ordersHistory[index].department = reqDept;
                     ordersHistory[index].items = items;
-                    // Note: we preserve the original timestamp but can label it as edited
-                    showToast("แก้ไขข้อมูลสั่งของเรียบร้อยแล้ว!", "success");
+                    showToast("แก้ไขข้อมูลออเดอร์พร้อมราคาสั่งซื้อเรียบร้อย!", "success");
                 }
                 cancelEditMode();
             } else {
@@ -741,14 +753,14 @@
             // Show Edit Banner
             const banner = document.getElementById('edit-mode-banner');
             const bannerDetails = document.getElementById('edit-mode-details');
-            bannerDetails.innerText = `คุณกำลังแก้ไขข้อมูลอิมพอร์ตของ คุณ ${order.requesterName} (เมื่อเวลา ${order.timestamp})`;
+            bannerDetails.innerText = `คุณกำลังแก้ไขข้อมูลออเดอร์ของ คุณ ${order.requesterName} (เมื่อเวลา ${order.timestamp})`;
             banner.classList.remove('hidden');
 
             // Set Form fields
             document.getElementById('req-name').value = order.requesterName;
             document.getElementById('req-dept').value = order.department;
 
-            // Clear and rebuilt Item Cards
+            // Clear and rebuilt Item Cards with Price data
             const container = document.getElementById('items-container');
             container.innerHTML = '';
             order.items.forEach(it => {
@@ -762,7 +774,7 @@
 
             // Switch to form tab
             switchTab('order-tab');
-            showToast("โหลดข้อมูลสั่งซื้อเก่าขึ้นมาเพื่อแก้ไขแล้ว", "success");
+            showToast("โหลดข้อมูลรวมทั้งราคาเพื่อแก้ไขแล้ว", "success");
         }
 
         function cancelEditMode() {
@@ -812,18 +824,34 @@
                 if (order.department === 'Front') deptBadge = "bg-amber-100 text-amber-900";
                 if (order.department === 'Housekeeping') deptBadge = "bg-emerald-100 text-emerald-900";
 
-                let itemsHTML = order.items.map(it => `
-                    <li class="text-xs text-gray-700 flex justify-between py-1 border-b border-dashed border-gray-100">
-                        <span class="font-semibold text-hana-deep">${it.itemName} (${it.category})</span>
-                        <span class="text-gray-500">${it.quantity} ${it.unit} ${it.remarks ? ` - <span class="italic text-gray-400">(${it.remarks})</span>` : ''}</span>
-                    </li>
-                `).join('');
+                let orderGrandTotal = 0;
+                let itemsHTML = order.items.map(it => {
+                    const price = Number(it.price) || 0;
+                    const itemTotal = price * it.quantity;
+                    orderGrandTotal += itemTotal;
+                    
+                    return `
+                        <li class="text-xs text-gray-700 flex justify-between py-1 border-b border-dashed border-gray-100">
+                            <span class="font-semibold text-hana-deep">${it.itemName} (${it.category})</span>
+                            <span class="text-gray-500">
+                                ${it.quantity} ${it.unit} x ฿${price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} = 
+                                <strong class="text-hana-primary">฿${itemTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</strong> 
+                                ${it.remarks ? ` <span class="italic text-gray-400">(${it.remarks})</span>` : ''}
+                            </span>
+                        </li>
+                    `;
+                }).join('');
 
                 card.innerHTML = `
-                    <div class="flex-grow space-y-2">
-                        <div class="flex items-center space-x-2">
-                            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${deptBadge}">${order.department}</span>
-                            <span class="text-xs text-hana-primary font-bold"><i class="fa-solid fa-clock"></i> ${order.timestamp}</span>
+                    <div class="flex-grow space-y-2 w-full">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold ${deptBadge}">${order.department}</span>
+                                <span class="text-xs text-hana-primary font-bold"><i class="fa-solid fa-clock"></i> ${order.timestamp}</span>
+                            </div>
+                            <span class="text-xs font-bold text-hana-deep bg-hana-cream px-2.5 py-1 rounded-lg">
+                                ยอดรวม: ฿${orderGrandTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                            </span>
                         </div>
                         <h4 class="text-sm font-bold text-gray-800">ผู้สั่ง: ${order.requesterName}</h4>
                         <ul class="pl-2 space-y-0.5 max-w-xl">
@@ -876,22 +904,32 @@
             uniqueDates.forEach(dateStr => {
                 const orders = grouped[dateStr];
                 let totalItemsCount = 0;
-                orders.forEach(o => totalItemsCount += o.items.length);
+                let dailyGrandTotal = 0;
+
+                orders.forEach(o => {
+                    totalItemsCount += o.items.length;
+                    o.items.forEach(it => {
+                        dailyGrandTotal += (Number(it.price) || 0) * (it.quantity || 1);
+                    });
+                });
 
                 const card = document.createElement('div');
-                card.className = "p-4 rounded-xl border border-hana-light bg-hana-soft/50 flex items-center justify-between shadow-sm hover:border-hana-primary transition duration-200";
+                card.className = "p-4 rounded-xl border border-hana-light bg-hana-soft/50 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-sm hover:border-hana-primary transition duration-200";
                 card.innerHTML = `
-                    <div>
+                    <div class="space-y-1">
                         <div class="text-sm font-bold text-hana-deep flex items-center space-x-2">
                             <i class="fa-solid fa-calendar-check text-hana-primary"></i>
                             <span>${thaiDateFormat(dateStr)}</span>
                         </div>
-                        <div class="text-[11px] text-gray-500 mt-1 flex space-x-3">
+                        <div class="text-[11px] text-gray-500 flex flex-wrap gap-x-3">
                             <span>ผู้สั่งทั้งหมด: <strong class="text-hana-primary">${orders.length} คน</strong></span>
                             <span>สินค้ารวม: <strong class="text-hana-primary">${totalItemsCount} รายการ</strong></span>
                         </div>
+                        <div class="text-xs font-bold text-hana-primary">
+                            มูลค่าเบิกรวมวัน: ฿${dailyGrandTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                        </div>
                     </div>
-                    <button onclick="openDailyReportPreview('${dateStr}')" class="px-3.5 py-2 bg-hana-primary hover:bg-hana-deep text-white rounded-lg text-xs font-bold transition flex items-center space-x-1">
+                    <button onclick="openDailyReportPreview('${dateStr}')" class="px-3.5 py-2 bg-hana-primary hover:bg-hana-deep text-white rounded-lg text-xs font-bold transition flex items-center justify-center space-x-1 self-start md:self-center">
                         <i class="fa-solid fa-print"></i>
                         <span>พิมพ์รวมวันนี้</span>
                     </button>
@@ -901,7 +939,8 @@
         }
 
         // --- HTML & Print Template Generator for Preview ---
-        function renderA4Layout(titleMeta, subtitleMeta, dataRowsHTML) {
+        // Generates 11-column table layout with Unit Price and Total Price columns + Grand Total row at the end
+        function renderA4Layout(titleMeta, subtitleMeta, dataRowsHTML, grandTotalSum) {
             return `
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #000000; padding-bottom: 12px; margin-bottom: 15px;">
                     <div>
@@ -916,28 +955,38 @@
 
                 <!-- Main Content Grid -->
                 <div style="flex-grow: 1;">
-                    <table style="width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 30px;">
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 20px;">
                         <thead>
                             <tr style="background-color: #F3F4F6;">
-                                <th style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px; width: 6%; font-weight: bold;">ลำดับ</th>
-                                <th style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px; width: 14%; font-weight: bold;">วันที่</th>
-                                <th style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px; width: 15%; font-weight: bold;">ชื่อผู้ขอ</th>
-                                <th style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px; width: 10%; font-weight: bold;">แผนก</th>
-                                <th style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px; width: 15%; font-weight: bold;">หมวดหมู่</th>
-                                <th style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px; width: 20%; font-weight: bold;">รายการ</th>
-                                <th style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px; width: 6%; font-weight: bold;">จำนวน</th>
-                                <th style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px; width: 6%; font-weight: bold;">หน่วย</th>
-                                <th style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px; width: 16%; font-weight: bold;">หมายเหตุ</th>
+                                <th style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px; width: 4%; font-weight: bold;">ลำดับ</th>
+                                <th style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px; width: 10%; font-weight: bold;">วันที่</th>
+                                <th style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px; width: 11%; font-weight: bold;">ชื่อผู้ขอ</th>
+                                <th style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px; width: 8%; font-weight: bold;">แผนก</th>
+                                <th style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px; width: 11%; font-weight: bold;">หมวดหมู่</th>
+                                <th style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px; width: 17%; font-weight: bold;">รายการ</th>
+                                <th style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px; width: 5%; font-weight: bold;">จำนวน</th>
+                                <th style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px; width: 5%; font-weight: bold;">หน่วย</th>
+                                <th style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px; width: 9%; font-weight: bold;">ราคา/หน่วย</th>
+                                <th style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px; width: 9%; font-weight: bold;">จำนวนเงิน</th>
+                                <th style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px; width: 11%; font-weight: bold;">หมายเหตุ</th>
                             </tr>
                         </thead>
                         <tbody>
                             ${dataRowsHTML}
+                            <!-- Grand Total Summary Row -->
+                            <tr style="background-color: #FAF8F5; font-weight: bold;">
+                                <td colspan="8" style="border: 1.5px solid #000000; padding: 10px 8px; text-align: right; font-size: 12px; font-weight: bold;">ยอดรวมมูลค่าเงินทั้งสิ้น (Grand Total)</td>
+                                <td colspan="2" style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 13px; font-weight: bold; color: #1C1613;">
+                                    ฿${grandTotalSum.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                                </td>
+                                <td style="border: 1.5px solid #000000; padding: 10px 4px;"></td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
 
                 <!-- Exact signature footer matching S__37208069.jpg -->
-                <div style="display: flex; justify-content: space-between; margin-top: 40px; margin-bottom: 20px; page-break-inside: avoid;">
+                <div style="display: flex; justify-content: space-between; margin-top: 40px; margin-bottom: 10px; page-break-inside: avoid;">
                     <div style="width: 40%; text-align: center;">
                         <div style="border-bottom: 1.5px solid #000000; height: 50px; margin-bottom: 10px; width: 220px; margin-left: auto; margin-right: auto;"></div>
                         <p style="font-size: 14px; font-weight: bold; margin: 0; color: #000000;">ผู้อนุมัติ</p>
@@ -955,23 +1004,35 @@
             const order = ordersHistory.find(o => o.id === orderId);
             if (!order) return;
 
-            document.getElementById('preview-modal-title').innerText = `พิมพ์ใบขอเบิกของพัสดุเฉพาะออเดอร์: คุณ ${order.requesterName}`;
+            document.getElementById('preview-modal-title').innerText = `พิมพ์ใบขอเบิกพัสดุเฉพาะออเดอร์: คุณ ${order.requesterName}`;
 
-            // Build rows
+            // Build rows & calculate totals
             let rowsHTML = '';
+            let grandTotal = 0;
+
             order.items.forEach((item, index) => {
                 const dateOnly = order.timestamp.split(' ')[0];
+                const price = Number(item.price) || 0;
+                const totalItemAmount = price * (item.quantity || 1);
+                grandTotal += totalItemAmount;
+
                 rowsHTML += `
                     <tr style="border-bottom: 1.5px solid #000000;">
-                        <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px;">${index + 1}</td>
+                        <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 11px;">${index + 1}</td>
                         <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 11px;">${thaiDateFormat(dateOnly)}</td>
-                        <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px;">${order.requesterName}</td>
-                        <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px;">${order.department}</td>
-                        <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px;">${item.category}</td>
-                        <td style="border: 1.5px solid #000000; padding: 10px 6px; text-align: left; font-size: 12px; font-weight: bold;">${item.itemName}</td>
-                        <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px; font-weight: bold;">${item.quantity}</td>
-                        <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px;">${item.unit}</td>
-                        <td style="border: 1.5px solid #000000; padding: 10px 6px; text-align: left; font-size: 11px; font-style: italic;">${item.remarks || '-'}</td>
+                        <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 11px;">${order.requesterName}</td>
+                        <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 11px;">${order.department}</td>
+                        <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 11px;">${item.category}</td>
+                        <td style="border: 1.5px solid #000000; padding: 10px 6px; text-align: left; font-size: 11px; font-weight: bold;">${item.itemName}</td>
+                        <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 11px; font-weight: bold;">${item.quantity}</td>
+                        <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 11px;">${item.unit}</td>
+                        <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: right; font-size: 11px; padding-right: 6px;">
+                            ฿${price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                        </td>
+                        <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: right; font-size: 11px; font-weight: bold; padding-right: 6px;">
+                            ฿${totalItemAmount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                        </td>
+                        <td style="border: 1.5px solid #000000; padding: 10px 6px; text-align: left; font-size: 10px; font-style: italic;">${item.remarks || '-'}</td>
                     </tr>
                 `;
             });
@@ -979,7 +1040,8 @@
             const docLayout = renderA4Layout(
                 order.timestamp,
                 "ใบขออนุมัติจัดซื้อและเบิกจ่ายวัสดุอุปกรณ์ (รายบุคคล)",
-                rowsHTML
+                rowsHTML,
+                grandTotal
             );
 
             // Set both the simulator and real printing container
@@ -1005,20 +1067,31 @@
             // Build dynamic grouped rows
             let rowsHTML = '';
             let rowIndex = 1;
+            let grandTotal = 0;
 
             targetOrders.forEach(order => {
                 order.items.forEach(item => {
+                    const price = Number(item.price) || 0;
+                    const totalItemAmount = price * (item.quantity || 1);
+                    grandTotal += totalItemAmount;
+
                     rowsHTML += `
                         <tr style="border-bottom: 1.5px solid #000000;">
-                            <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px;">${rowIndex++}</td>
+                            <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 11px;">${rowIndex++}</td>
                             <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 11px;">${thaiDateFormat(dateStr)}</td>
-                            <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px;">${order.requesterName}</td>
-                            <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px;">${order.department}</td>
-                            <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px;">${item.category}</td>
-                            <td style="border: 1.5px solid #000000; padding: 10px 6px; text-align: left; font-size: 12px; font-weight: bold;">${item.itemName}</td>
-                            <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px; font-weight: bold;">${item.quantity}</td>
-                            <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px;">${item.unit}</td>
-                            <td style="border: 1.5px solid #000000; padding: 10px 6px; text-align: left; font-size: 11px; font-style: italic;">${item.remarks || '-'}</td>
+                            <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 11px;">${order.requesterName}</td>
+                            <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 11px;">${order.department}</td>
+                            <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 11px;">${item.category}</td>
+                            <td style="border: 1.5px solid #000000; padding: 10px 6px; text-align: left; font-size: 11px; font-weight: bold;">${item.itemName}</td>
+                            <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 11px; font-weight: bold;">${item.quantity}</td>
+                            <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 11px;">${item.unit}</td>
+                            <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: right; font-size: 11px; padding-right: 6px;">
+                                ฿${price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                            </td>
+                            <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: right; font-size: 11px; font-weight: bold; padding-right: 6px;">
+                                ฿${totalItemAmount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                            </td>
+                            <td style="border: 1.5px solid #000000; padding: 10px 6px; text-align: left; font-size: 10px; font-style: italic;">${item.remarks || '-'}</td>
                         </tr>
                     `;
                 });
@@ -1027,7 +1100,8 @@
             const docLayout = renderA4Layout(
                 `${dateStr} 23:59:59 (สรุปสิ้นวัน)`,
                 `ใบรวมรายการขออนุมัติเบิกจ่ายและจัดซื้อวัสดุอุปกรณ์ ประจำวันที่ ${thaiDateFormat(dateStr)}`,
-                rowsHTML
+                rowsHTML,
+                grandTotal
             );
 
             // Set both the simulator and real printing container
