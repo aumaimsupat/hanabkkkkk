@@ -56,6 +56,16 @@
             background: #78503E;
         }
 
+        /* REMOVE SPIN BUTTONS FROM NUMBER INPUTS FOR CLEAN DIRECT TYPING */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        input[type=number] {
+            -moz-appearance: textfield; /* Firefox */
+        }
+
         /* PRINT STYLING - FOR PDF EXPORT EXACTLY LIKE THE IMAGE */
         @media print {
             /* Force hidden state on everything else */
@@ -270,7 +280,7 @@
 
                             <!-- Dynamic Items Container -->
                             <div id="items-container" class="space-y-4">
-                                <!-- Item Card Template (Default row) -->
+                                <!-- Item Card Template (Default row with direct typing number fields) -->
                                 <div class="item-card bg-hana-soft/50 p-4 rounded-xl border border-hana-light/30 relative group transition hover:border-hana-accent">
                                     <div class="absolute right-3 top-3 opacity-0 group-hover:opacity-100 transition-opacity">
                                         <button type="button" onclick="removeItemRow(this)" class="text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-red-50" title="ลบรายการนี้">
@@ -295,11 +305,11 @@
                                                 <option value="อื่นๆ">อื่นๆ</option>
                                             </select>
                                         </div>
-                                        <!-- Quantity -->
+                                        <!-- Quantity (With direct text-like typing, no spinners) -->
                                         <div class="md:col-span-1">
                                             <label class="block text-xs font-semibold text-hana-primary mb-1">จำนวน <span class="text-red-500">*</span></label>
-                                            <input type="number" required min="1" value="1" 
-                                                   class="item-qty w-full px-3 py-2 rounded-lg border border-hana-light focus:outline-none focus:ring-1 focus:ring-hana-primary bg-white text-sm text-center">
+                                            <input type="number" required min="1" value="1" placeholder="1"
+                                                   class="item-qty w-full px-2 py-2 rounded-lg border border-hana-light focus:outline-none focus:ring-1 focus:ring-hana-primary bg-white text-sm text-center">
                                         </div>
                                         <!-- Unit -->
                                         <div class="md:col-span-2">
@@ -307,11 +317,11 @@
                                             <input type="text" required placeholder="ชิ้น/ขวด" 
                                                    class="item-unit w-full px-3 py-2 rounded-lg border border-hana-light focus:outline-none focus:ring-1 focus:ring-hana-primary bg-white text-sm text-center">
                                         </div>
-                                        <!-- Price -->
+                                        <!-- Price (With direct text-like typing, no spinners) -->
                                         <div class="md:col-span-2">
                                             <label class="block text-xs font-semibold text-hana-primary mb-1">ราคา/หน่วย (บาท) <span class="text-red-500">*</span></label>
                                             <input type="number" step="any" min="0" required placeholder="0.00" 
-                                                   class="item-price w-full px-3 py-2 rounded-lg border border-hana-light focus:outline-none focus:ring-1 focus:ring-hana-primary bg-white text-sm text-center">
+                                                   class="item-price w-full px-2 py-2 rounded-lg border border-hana-light focus:outline-none focus:ring-1 focus:ring-hana-primary bg-white text-sm text-center">
                                         </div>
                                     </div>
                                     <!-- Remarks (Optional) -->
@@ -638,8 +648,8 @@
                     </div>
                     <div class="md:col-span-1">
                         <label class="block text-xs font-semibold text-hana-primary mb-1">จำนวน <span class="text-red-500">*</span></label>
-                        <input type="number" required min="1" value="${qtyVal}" 
-                               class="item-qty w-full px-3 py-2 rounded-lg border border-hana-light focus:outline-none focus:ring-1 focus:ring-hana-primary bg-white text-sm text-center">
+                        <input type="number" required min="1" value="${qtyVal}" placeholder="1"
+                               class="item-qty w-full px-2 py-2 rounded-lg border border-hana-light focus:outline-none focus:ring-1 focus:ring-hana-primary bg-white text-sm text-center">
                     </div>
                     <div class="md:col-span-2">
                         <label class="block text-xs font-semibold text-hana-primary mb-1">หน่วยเรียก <span class="text-red-500">*</span></label>
@@ -649,7 +659,7 @@
                     <div class="md:col-span-2">
                         <label class="block text-xs font-semibold text-hana-primary mb-1">ราคา/หน่วย (บาท) <span class="text-red-500">*</span></label>
                         <input type="number" step="any" min="0" required placeholder="0.00" value="${priceVal}"
-                               class="item-price w-full px-3 py-2 rounded-lg border border-hana-light focus:outline-none focus:ring-1 focus:ring-hana-primary bg-white text-sm text-center">
+                               class="item-price w-full px-2 py-2 rounded-lg border border-hana-light focus:outline-none focus:ring-1 focus:ring-hana-primary bg-white text-sm text-center">
                     </div>
                 </div>
                 <div class="mt-3">
@@ -777,6 +787,7 @@
             showToast("โหลดข้อมูลรวมทั้งราคาเพื่อแก้ไขแล้ว", "success");
         }
 
+        // Cancel editing mode
         function cancelEditMode() {
             editingOrderId = null;
             document.getElementById('edit-mode-banner').classList.add('hidden');
@@ -834,8 +845,8 @@
                         <li class="text-xs text-gray-700 flex justify-between py-1 border-b border-dashed border-gray-100">
                             <span class="font-semibold text-hana-deep">${it.itemName} (${it.category})</span>
                             <span class="text-gray-500">
-                                ${it.quantity} ${it.unit} x ฿${price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} = 
-                                <strong class="text-hana-primary">฿${itemTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</strong> 
+                                ${it.quantity} ${it.unit} x ${price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} บาท = 
+                                <strong class="text-hana-primary">${itemTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} บาท</strong> 
                                 ${it.remarks ? ` <span class="italic text-gray-400">(${it.remarks})</span>` : ''}
                             </span>
                         </li>
@@ -850,7 +861,7 @@
                                 <span class="text-xs text-hana-primary font-bold"><i class="fa-solid fa-clock"></i> ${order.timestamp}</span>
                             </div>
                             <span class="text-xs font-bold text-hana-deep bg-hana-cream px-2.5 py-1 rounded-lg">
-                                ยอดรวม: ฿${orderGrandTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                                ยอดรวม: ${orderGrandTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} บาท
                             </span>
                         </div>
                         <h4 class="text-sm font-bold text-gray-800">ผู้สั่ง: ${order.requesterName}</h4>
@@ -926,7 +937,7 @@
                             <span>สินค้ารวม: <strong class="text-hana-primary">${totalItemsCount} รายการ</strong></span>
                         </div>
                         <div class="text-xs font-bold text-hana-primary">
-                            มูลค่าเบิกรวมวัน: ฿${dailyGrandTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                            มูลค่าเบิกรวมวัน: ${dailyGrandTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} บาท
                         </div>
                     </div>
                     <button onclick="openDailyReportPreview('${dateStr}')" class="px-3.5 py-2 bg-hana-primary hover:bg-hana-deep text-white rounded-lg text-xs font-bold transition flex items-center justify-center space-x-1 self-start md:self-center">
@@ -967,8 +978,8 @@
                                 <th style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px; width: 5%; font-weight: bold;">จำนวน</th>
                                 <th style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px; width: 5%; font-weight: bold;">หน่วย</th>
                                 <th style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px; width: 9%; font-weight: bold;">ราคา/หน่วย</th>
-                                <th style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px; width: 9%; font-weight: bold;">จำนวนเงิน</th>
-                                <th style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px; width: 11%; font-weight: bold;">หมายเหตุ</th>
+                                <th style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px; width: 10%; font-weight: bold;">จำนวนเงิน</th>
+                                <th style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px; width: 10%; font-weight: bold;">หมายเหตุ</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -976,8 +987,8 @@
                             <!-- Grand Total Summary Row -->
                             <tr style="background-color: #FAF8F5; font-weight: bold;">
                                 <td colspan="8" style="border: 1.5px solid #000000; padding: 10px 8px; text-align: right; font-size: 12px; font-weight: bold;">ยอดรวมมูลค่าเงินทั้งสิ้น (Grand Total)</td>
-                                <td colspan="2" style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 13px; font-weight: bold; color: #1C1613;">
-                                    ฿${grandTotalSum.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                                <td colspan="2" style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 12px; font-weight: bold; color: #1C1613;">
+                                    ${grandTotalSum.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} บาท
                                 </td>
                                 <td style="border: 1.5px solid #000000; padding: 10px 4px;"></td>
                             </tr>
@@ -1027,10 +1038,10 @@
                         <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 11px; font-weight: bold;">${item.quantity}</td>
                         <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 11px;">${item.unit}</td>
                         <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: right; font-size: 11px; padding-right: 6px;">
-                            ฿${price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                            ${price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} บาท
                         </td>
                         <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: right; font-size: 11px; font-weight: bold; padding-right: 6px;">
-                            ฿${totalItemAmount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                            ${totalItemAmount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} บาท
                         </td>
                         <td style="border: 1.5px solid #000000; padding: 10px 6px; text-align: left; font-size: 10px; font-style: italic;">${item.remarks || '-'}</td>
                     </tr>
@@ -1086,10 +1097,10 @@
                             <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 11px; font-weight: bold;">${item.quantity}</td>
                             <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: center; font-size: 11px;">${item.unit}</td>
                             <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: right; font-size: 11px; padding-right: 6px;">
-                                ฿${price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                                ${price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} บาท
                             </td>
                             <td style="border: 1.5px solid #000000; padding: 10px 4px; text-align: right; font-size: 11px; font-weight: bold; padding-right: 6px;">
-                                ฿${totalItemAmount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                                ${totalItemAmount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} บาท
                             </td>
                             <td style="border: 1.5px solid #000000; padding: 10px 6px; text-align: left; font-size: 10px; font-style: italic;">${item.remarks || '-'}</td>
                         </tr>
