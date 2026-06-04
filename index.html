@@ -1,1 +1,1255 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hana BKK - System สำหรับสั่งของภายใน</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Noto Sans Thai & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        hana: {
+                            dark: '#1C1613',      // ดำอบอุ่น
+                            deep: '#4A3429',      // น้ำตาลเข้มระดับพรีเมียม
+                            primary: '#78503E',   // น้ำตาลหลัก
+                            accent: '#B08873',    // เบจเข้ม
+                            light: '#D9C5B2',     // เบจสว่าง
+                            cream: '#F7F5F0',     // ขาวครีม/โอ๊ตมีล
+                            soft: '#FAF8F5'       // พื้นหลังขาวเบจอ่อน
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Noto Sans Thai', 'Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Noto Sans Thai', 'Inter', sans-serif;
+            background-color: #FAF8F5;
+        }
+        /* Custom scrollbar for beautiful table view */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F7F5F0;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #B08873;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #78503E;
+        }
+    </style>
+</head>
+<body class="text-hana-dark antialiased min-h-screen flex flex-col">
 
+    <!-- Navigation Bar -->
+    <nav class="bg-hana-dark text-white sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 rounded-full bg-hana-primary flex items-center justify-center border-2 border-hana-light shadow-lg">
+                        <span class="text-white font-serif font-bold text-xl tracking-wider">H</span>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold tracking-widest text-hana-cream">HANA BKK</h1>
+                        <p class="text-xs text-hana-light tracking-wider">Internal Ordering System</p>
+                    </div>
+                </div>
+                <div class="hidden md:flex space-x-2">
+                    <button onclick="switchTab('order-tab')" id="btn-order-tab" class="px-4 py-2 rounded-lg bg-hana-primary text-white text-sm font-medium transition duration-300 flex items-center space-x-2">
+                        <i class="fa-solid fa-file-invoice"></i>
+                        <span>แบบฟอร์มสั่งของ</span>
+                    </button>
+                    <button onclick="switchTab('sheets-tab')" id="btn-sheets-tab" class="px-4 py-2 rounded-lg text-hana-light hover:text-white hover:bg-hana-deep text-sm font-medium transition duration-300 flex items-center space-x-2">
+                        <i class="fa-solid fa-table-cells"></i>
+                        <span>ดูตารางจำลอง Google Sheet</span>
+                    </button>
+                    <button onclick="switchTab('setup-tab')" id="btn-setup-tab" class="px-4 py-2 rounded-lg text-hana-light hover:text-white hover:bg-hana-deep text-sm font-medium transition duration-300 flex items-center space-x-2">
+                        <i class="fa-solid fa-link"></i>
+                        <span>เชื่อมต่อ Google Sheets จริง</span>
+                    </button>
+                </div>
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-hana-light focus:outline-none p-2 rounded-md hover:text-white hover:bg-hana-deep">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Dropdown Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-hana-deep border-t border-hana-primary px-4 pt-2 pb-4 space-y-2">
+            <button onclick="switchTab('order-tab'); toggleMobileMenu()" class="w-full text-left px-4 py-2.5 rounded-lg bg-hana-primary text-white text-sm font-medium flex items-center space-x-3">
+                <i class="fa-solid fa-file-invoice w-5"></i>
+                <span>แบบฟอร์มสั่งของ</span>
+            </button>
+            <button onclick="switchTab('sheets-tab'); toggleMobileMenu()" class="w-full text-left px-4 py-2.5 rounded-lg text-hana-light hover:text-white hover:bg-hana-primary text-sm font-medium flex items-center space-x-3">
+                <i class="fa-solid fa-table-cells w-5"></i>
+                <span>ดูตารางจำลอง Google Sheet</span>
+            </button>
+            <button onclick="switchTab('setup-tab'); toggleMobileMenu()" class="w-full text-left px-4 py-2.5 rounded-lg text-hana-light hover:text-white hover:bg-hana-primary text-sm font-medium flex items-center space-x-3">
+                <i class="fa-solid fa-link w-5"></i>
+                <span>เชื่อมต่อ Google Sheets จริง</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Alert banner & notification toast container -->
+    <div id="toast-container" class="fixed top-24 right-4 z-50 space-y-2 max-w-sm w-full"></div>
+
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        
+        <!-- Hero Information Section -->
+        <div class="mb-8 rounded-2xl bg-gradient-to-r from-hana-deep to-hana-primary p-6 md:p-8 text-white shadow-xl relative overflow-hidden">
+            <div class="absolute right-0 top-0 opacity-10 pointer-events-none transform translate-x-12 -translate-y-6">
+                <i class="fa-solid fa-box-open text-[15rem]"></i>
+            </div>
+            <div class="relative z-10">
+                <span class="bg-hana-accent text-hana-dark px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">Hana BKK Internal Portal</span>
+                <h2 class="text-2xl md:text-3xl font-bold mt-2">ระบบเบิกและสั่งซื้อวัสดุอุปกรณ์</h2>
+                <p class="text-hana-light text-sm md:text-base mt-2 max-w-2xl">
+                    สะดวก รวดเร็ว และเป็นระบบ กรอกข้อมูลเพียงครั้งเดียวสามารถระบุได้หลายรายการ ระบบจะคัดแยกหมวดหมู่ออกเป็นแท็บต่างๆ ใน Google Sheets พร้อมลงเวลา (Timestamp) ให้โดยอัตโนมัติ
+                </p>
+            </div>
+        </div>
+
+        <!-- TAB 1: Order Form Tab -->
+        <div id="order-tab" class="tab-content">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <!-- Left Column: Order Form Inputs (2 cols width on desktop) -->
+                <div class="lg:col-span-2 space-y-6">
+                    <form id="orderForm" onsubmit="submitForm(event)" class="bg-white rounded-2xl shadow-md border border-hana-light/30 p-6 md:p-8 space-y-6">
+                        
+                        <!-- Form Section 1: Requester Information -->
+                        <div>
+                            <div class="flex items-center space-x-3 border-b border-hana-light/30 pb-3 mb-4">
+                                <div class="w-8 h-8 rounded-full bg-hana-cream text-hana-primary flex items-center justify-center font-bold">1</div>
+                                <h3 class="text-lg font-bold text-hana-deep">ข้อมูลผู้สั่งซื้อ (Requester)</h3>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-semibold text-hana-deep mb-1">ชื่อ-นามสกุล <span class="text-red-500">*</span></label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-hana-accent">
+                                            <i class="fa-solid fa-user"></i>
+                                        </div>
+                                        <input type="text" id="req-name" required placeholder="เช่น คุณสมชาย ดีใจ" 
+                                               class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-hana-light focus:outline-none focus:ring-2 focus:ring-hana-primary/50 focus:border-hana-primary bg-hana-soft/30 transition text-sm">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-hana-deep mb-1">แผนก <span class="text-red-500">*</span></label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-hana-accent">
+                                            <i class="fa-solid fa-building"></i>
+                                        </div>
+                                        <select id="req-dept" required 
+                                                class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-hana-light focus:outline-none focus:ring-2 focus:ring-hana-primary/50 focus:border-hana-primary bg-hana-soft/30 transition text-sm appearance-none">
+                                            <option value="" disabled selected>เลือกแผนก...</option>
+                                            <option value="salon">Salon (ร้านทำผม)</option>
+                                            <option value="front">Front (ต้อนรับ)</option>
+                                            <option value="housekeeping">Housekeeping (ดูแลความสะอาด)</option>
+                                        </select>
+                                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-hana-accent">
+                                            <i class="fa-solid fa-chevron-down"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Section 2: Items List -->
+                        <div>
+                            <div class="flex items-center justify-between border-b border-hana-light/30 pb-3 mb-4">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 rounded-full bg-hana-cream text-hana-primary flex items-center justify-center font-bold">2</div>
+                                    <h3 class="text-lg font-bold text-hana-deep">รายการสินค้าที่ต้องการสั่ง</h3>
+                                </div>
+                                <span class="text-xs bg-hana-primary/10 text-hana-primary px-3 py-1 rounded-full font-medium" id="item-count-badge">รวม 1 รายการ</span>
+                            </div>
+
+                            <p class="text-xs text-gray-500 mb-4">คุณสามารถเพิ่มรายการสินค้าได้ไม่จำกัดต่อการสั่ง 1 ครั้ง ระบบจะส่งข้อมูลทั้งหมดเข้าสู่ตารางเดียวกัน</p>
+
+                            <!-- Dynamic Items Container -->
+                            <div id="items-container" class="space-y-4">
+                                <!-- Item Card Template (Default row) -->
+                                <div class="item-card bg-hana-soft/50 p-4 rounded-xl border border-hana-light/30 relative group transition hover:border-hana-accent">
+                                    <div class="absolute right-3 top-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button type="button" onclick="removeItemRow(this)" class="text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-red-50" title="ลบรายการนี้">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </button>
+                                    </div>
+                                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                                        <!-- Item Name -->
+                                        <div class="md:col-span-5">
+                                            <label class="block text-xs font-semibold text-hana-primary mb-1">ชื่อสินค้า / อุปกรณ์ที่ต้องการ <span class="text-red-500">*</span></label>
+                                            <input type="text" required placeholder="ระบุชื่อสิ่งของ เช่น แชมพูขวดใหญ่, ทิชชู่ม้วนหนา" 
+                                                   class="item-name w-full px-3 py-2 rounded-lg border border-hana-light focus:outline-none focus:ring-1 focus:ring-hana-primary bg-white text-sm">
+                                        </div>
+                                        <!-- Category Dropdown -->
+                                        <div class="md:col-span-3">
+                                            <label class="block text-xs font-semibold text-hana-primary mb-1">ประเภท <span class="text-red-500">*</span></label>
+                                            <select required class="item-category w-full px-3 py-2 rounded-lg border border-hana-light focus:outline-none focus:ring-1 focus:ring-hana-primary bg-white text-sm">
+                                                <option value="" disabled selected>เลือกประเภท...</option>
+                                                <option value="อุปกรณ์ทำความสะอาด">อุปกรณ์ทำความสะอาด</option>
+                                                <option value="ร้านเสริมสวย">ร้านเสริมสวย (Salon)</option>
+                                                <option value="อุปกรณ์สำนักงาน">อุปกรณ์สำนักงาน</option>
+                                                <option value="อื่นๆ">อื่นๆ</option>
+                                            </select>
+                                        </div>
+                                        <!-- Quantity -->
+                                        <div class="md:col-span-2">
+                                            <label class="block text-xs font-semibold text-hana-primary mb-1">จำนวน <span class="text-red-500">*</span></label>
+                                            <input type="number" required min="1" value="1" 
+                                                   class="item-qty w-full px-3 py-2 rounded-lg border border-hana-light focus:outline-none focus:ring-1 focus:ring-hana-primary bg-white text-sm text-center">
+                                        </div>
+                                        <!-- Unit -->
+                                        <div class="md:col-span-2">
+                                            <label class="block text-xs font-semibold text-hana-primary mb-1">หน่วยเรียก <span class="text-red-500">*</span></label>
+                                            <input type="text" required placeholder="ชิ้น,ขวด,กล่อง" 
+                                                   class="item-unit w-full px-3 py-2 rounded-lg border border-hana-light focus:outline-none focus:ring-1 focus:ring-hana-primary bg-white text-sm text-center">
+                                        </div>
+                                    </div>
+                                    <!-- Remarks (Optional) -->
+                                    <div class="mt-3">
+                                        <label class="block text-[11px] font-semibold text-hana-accent mb-0.5">หมายเหตุเพิ่มเติม (หากมี)</label>
+                                        <input type="text" placeholder="เช่น ดำเนินการด่วน, ขอเฉพาะแบรนด์เดิม" 
+                                               class="item-remarks w-full px-3 py-1.5 rounded-lg border border-hana-light/60 focus:outline-none focus:ring-1 focus:ring-hana-primary bg-white text-xs">
+                                    </div>
+                                    <!-- Mobile-only delete button -->
+                                    <div class="mt-3 flex justify-end md:hidden">
+                                        <button type="button" onclick="removeItemRow(this)" class="text-red-500 text-xs px-2 py-1 rounded border border-red-200 hover:bg-red-50 flex items-center space-x-1">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                            <span>ลบรายการสินค้า</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Add Item Row Button -->
+                            <div class="mt-4">
+                                <button type="button" onclick="addItemRow()" class="w-full md:w-auto px-5 py-2.5 rounded-xl border-2 border-dashed border-hana-accent text-hana-primary hover:bg-hana-cream hover:border-hana-primary transition-all font-semibold text-sm flex items-center justify-center space-x-2">
+                                    <i class="fa-solid fa-plus-circle"></i>
+                                    <span>เพิ่มรายการสินค้าอื่น</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="border-t border-hana-light/30 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
+                            <div class="flex items-center space-x-2 text-xs text-gray-500">
+                                <i class="fa-solid fa-shield-halved text-hana-primary"></i>
+                                <span>ส่งตรงไปยัง Google Sheets แท็บเฉพาะหมวดหมู่โดยอัตโนมัติ</span>
+                            </div>
+                            <button type="submit" class="w-full md:w-auto px-8 py-3.5 bg-hana-deep text-white hover:bg-hana-dark font-bold rounded-xl shadow-lg hover:shadow-xl transition transform active:scale-95 flex items-center justify-center space-x-3">
+                                <i class="fa-solid fa-paper-plane"></i>
+                                <span>ยืนยันและส่งใบสั่งซื้อ</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Right Column: Info & Setup Sidebar -->
+                <div class="space-y-6">
+                    <!-- Google Sheet Integration status card -->
+                    <div class="bg-white rounded-2xl shadow-md border border-hana-light/30 p-6">
+                        <h4 class="text-base font-bold text-hana-deep mb-3 flex items-center space-x-2">
+                            <i class="fa-solid fa-circle-nodes text-green-600"></i>
+                            <span>สถานะการเชื่อมต่อระบบ</span>
+                        </h4>
+                        
+                        <div id="connection-status" class="bg-yellow-50 text-yellow-800 p-4 rounded-xl border border-yellow-200/50 mb-4 text-xs space-y-2">
+                            <p class="font-bold flex items-center space-x-2">
+                                <span class="w-2 h-2 rounded-full bg-yellow-500 animate-pulse"></span>
+                                <span>โหมดจำลอง (ยังไม่ได้เชื่อม Google Sheet)</span>
+                            </p>
+                            <p class="text-gray-600">ปัจจุบันใบสั่งซื้อจะถูกบันทึกไว้ใน "ตารางจำลอง" ของแอปนี้เพื่อการทดลองใช้งาน คุณสามารถกรอกข้อมูลเล่นเพื่อทดสอบได้ทันที</p>
+                        </div>
+
+                        <!-- Active Sheet Link Placeholder (if configured) -->
+                        <div id="sheet-configured-status" class="hidden bg-green-50 text-green-800 p-4 rounded-xl border border-green-200/50 mb-4 text-xs space-y-2">
+                            <p class="font-bold flex items-center space-x-2">
+                                <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                                <span>เชื่อมต่อ Google Sheets จริงแล้ว!</span>
+                            </p>
+                            <a id="configured-sheet-url" href="#" target="_blank" class="text-hana-primary font-semibold underline break-all flex items-center space-x-1">
+                                <span>เปิดไปหน้า Google Sheets ของ Hana</span>
+                                <i class="fa-solid fa-up-right-from-square text-[10px]"></i>
+                            </a>
+                        </div>
+
+                        <div class="space-y-3">
+                            <button onclick="switchTab('setup-tab')" class="w-full py-2.5 px-4 bg-hana-primary text-white hover:bg-hana-deep rounded-xl font-semibold text-xs transition duration-300 flex items-center justify-center space-x-2 shadow">
+                                <i class="fa-solid fa-gear"></i>
+                                <span>ตั้งค่าเชื่อมต่อชีทของคุณ (ฟรี 100%)</span>
+                            </button>
+                            <button onclick="switchTab('sheets-tab')" class="w-full py-2.5 px-4 border border-hana-primary text-hana-primary hover:bg-hana-cream rounded-xl font-semibold text-xs transition duration-300 flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-table"></i>
+                                <span>เปิดแผงพรีวิวตารางชีทของแอป</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Hana Company Brand Guidelines & Quick Helper -->
+                    <div class="bg-white rounded-2xl shadow-md border border-hana-light/30 p-6 text-sm text-gray-700 space-y-4">
+                        <div class="border-b border-hana-light/20 pb-2">
+                            <h4 class="font-bold text-hana-deep text-sm tracking-wider uppercase">คู่มือการแบ่งหมวดหมู่</h4>
+                        </div>
+                        <ul class="space-y-3 text-xs">
+                            <li class="flex items-start space-x-2">
+                                <i class="fa-solid fa-broom text-hana-primary mt-0.5 w-4 text-center"></i>
+                                <div>
+                                    <strong class="text-hana-deep">อุปกรณ์ทำความสะอาด</strong>
+                                    <p class="text-gray-500">น้ำยาเช็ดพื้น, ทิชชู่, แอลกอฮอล์, ถุงขยะ, แปรงขัด, หน้ากากอนามัย</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start space-x-2">
+                                <i class="fa-solid fa-scissors text-hana-primary mt-0.5 w-4 text-center"></i>
+                                <div>
+                                    <strong class="text-hana-deep">ร้านเสริมสวย (Salon)</strong>
+                                    <p class="text-gray-500">แชมพู, ครีมนวดผม, ยาสระผม, สีพ่นผม, อุปกรณ์แต่งผม, ฟอยล์ทำสี</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start space-x-2">
+                                <i class="fa-solid fa-paperclip text-hana-primary mt-0.5 w-4 text-center"></i>
+                                <div>
+                                    <strong class="text-hana-deep">อุปกรณ์สำนักงาน</strong>
+                                    <p class="text-gray-500">กระดาษ A4, ปากกาเคมี, เทปใส, เครื่องเขียน, ลวดเย็บกระดาษ</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start space-x-2">
+                                <i class="fa-solid fa-box text-hana-primary mt-0.5 w-4 text-center"></i>
+                                <div>
+                                    <strong class="text-hana-deep">อื่นๆ</strong>
+                                    <p class="text-gray-500">สิ่งของที่ไม่เข้ากลุ่มข้างต้น หรือของสั่งทำพิเศษสำหรับแผนกต้อนรับ</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- App Developers Note / Brand Info -->
+                    <div class="text-center text-xs text-hana-accent space-y-1 py-2">
+                        <p class="font-semibold">Hana BKK © 2026</p>
+                        <p>ออกแบบเฉพาะเพื่อการบริหารงานที่เป็นหนึ่งเดียว</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- TAB 2: Simulated Google Sheet Preview -->
+        <div id="sheets-tab" class="tab-content hidden">
+            <div class="bg-white rounded-2xl shadow-xl border border-hana-light/30 overflow-hidden">
+                <!-- Google Sheets Lookalike Header -->
+                <div class="bg-[#107C41] text-white p-4 flex flex-col sm:flex-row justify-between items-center gap-3">
+                    <div class="flex items-center space-x-3">
+                        <div class="bg-white text-[#107C41] w-10 h-10 rounded flex items-center justify-center font-bold text-lg shadow">
+                            <i class="fa-regular fa-file-excel text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold flex items-center space-x-2">
+                                <span>Hana_BKK_Supply_Orders.xlsx</span>
+                                <span class="bg-white/20 text-xs px-2 py-0.5 rounded-full font-normal">แชร์แล้ว</span>
+                            </h3>
+                            <p class="text-xs text-green-100">จำลองตารางแยกแท็บ (หมวดหมู่) อัปเดตแบบเรียลไทม์หลังคุณกดสั่งซื้อจากแท็บแรก</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button onclick="downloadAsCSV()" class="px-4 py-2 bg-[#0C5F32] hover:bg-[#084223] text-white text-xs font-semibold rounded-lg flex items-center space-x-2 transition shadow">
+                            <i class="fa-solid fa-download"></i>
+                            <span>ดาวน์โหลดตารางจำลอง (.csv)</span>
+                        </button>
+                        <button onclick="clearSimulatedOrders()" class="px-3 py-2 bg-red-700 hover:bg-red-800 text-white text-xs font-semibold rounded-lg flex items-center space-x-2 transition">
+                            <i class="fa-solid fa-circle-minus"></i>
+                            <span>ล้างข้อมูลตัวอย่าง</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Google Sheets Sub-Tabs Navigation (Categories) -->
+                <div class="bg-[#f3f2f1] border-b border-gray-200 px-4 pt-2 flex flex-wrap gap-1">
+                    <button onclick="selectSheetCategory('all')" id="sheet-btn-all" class="sheet-tab-btn active px-4 py-2 bg-white text-gray-800 border-t-2 border-[#107C41] text-xs font-semibold rounded-t-lg transition focus:outline-none">
+                        🏢 รวมออเดอร์ทั้งหมด
+                    </button>
+                    <button onclick="selectSheetCategory('อุปกรณ์ทำความสะอาด')" id="sheet-btn-cleaning" class="sheet-tab-btn px-4 py-2 text-gray-500 hover:bg-white/50 text-xs font-semibold rounded-t-lg transition focus:outline-none">
+                        🧹 อุปกรณ์ทำความสะอาด
+                    </button>
+                    <button onclick="selectSheetCategory('ร้านเสริมสวย')" id="sheet-btn-salon" class="sheet-tab-btn px-4 py-2 text-gray-500 hover:bg-white/50 text-xs font-semibold rounded-t-lg transition focus:outline-none">
+                        ✂️ ร้านเสริมสวย (Salon)
+                    </button>
+                    <button onclick="selectSheetCategory('อุปกรณ์สำนักงาน')" id="sheet-btn-office" class="sheet-tab-btn px-4 py-2 text-gray-500 hover:bg-white/50 text-xs font-semibold rounded-t-lg transition focus:outline-none">
+                        📁 อุปกรณ์สำนักงาน
+                    </button>
+                    <button onclick="selectSheetCategory('อื่นๆ')" id="sheet-btn-others" class="sheet-tab-btn px-4 py-2 text-gray-500 hover:bg-white/50 text-xs font-semibold rounded-t-lg transition focus:outline-none">
+                        📦 อื่นๆ
+                    </button>
+                </div>
+
+                <!-- Spreadsheet Data Table Content Area -->
+                <div class="p-6 overflow-x-auto min-h-[300px]">
+                    <div class="flex justify-between items-center mb-4 text-xs">
+                        <div class="text-gray-500">
+                            หมวดหมู่ปัจจุบัน: <span id="current-category-label" class="font-bold text-hana-deep">รวมออเดอร์ทั้งหมด</span>
+                        </div>
+                        <div class="text-gray-500" id="row-count-text">
+                            พบข้อมูล 0 รายการ
+                        </div>
+                    </div>
+
+                    <table class="min-w-full divide-y divide-gray-200 text-left border border-gray-200 text-xs">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-4 py-3 border-r border-gray-200 font-bold text-gray-700 tracking-wider">ลำดับ</th>
+                                <th scope="col" class="px-4 py-3 border-r border-gray-200 font-bold text-gray-700 tracking-wider">วัน-เวลาที่สั่ง (Timestamp)</th>
+                                <th scope="col" class="px-4 py-3 border-r border-gray-200 font-bold text-gray-700 tracking-wider">ชื่อผู้สั่ง</th>
+                                <th scope="col" class="px-4 py-3 border-r border-gray-200 font-bold text-gray-700 tracking-wider">แผนก</th>
+                                <th scope="col" class="px-4 py-3 border-r border-gray-200 font-bold text-gray-700 tracking-wider">หมวดหมู่ตาราง</th>
+                                <th scope="col" class="px-4 py-3 border-r border-gray-200 font-bold text-gray-700 tracking-wider">รายการสินค้า</th>
+                                <th scope="col" class="px-4 py-3 border-r border-gray-200 font-bold text-gray-700 text-center tracking-wider">จำนวน</th>
+                                <th scope="col" class="px-4 py-3 border-r border-gray-200 font-bold text-gray-700 text-center tracking-wider">หน่วย</th>
+                                <th scope="col" class="px-4 py-3 font-bold text-gray-700 tracking-wider">หมายเหตุ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="simulated-sheets-tbody" class="bg-white divide-y divide-gray-100 font-mono">
+                            <!-- Rows will be injected by JavaScript -->
+                            <tr>
+                                <td colspan="9" class="text-center py-12 text-gray-400 font-sans">
+                                    <div class="flex flex-col items-center justify-center space-y-2">
+                                        <i class="fa-solid fa-folder-open text-3xl"></i>
+                                        <p>ยังไม่มีรายการถูกส่งเข้ามา ทดลองสั่งซื้อสินค้าจากแบบฟอร์มเพื่อแสดงตารางจำลอง</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Footer of Google Sheet Mockup -->
+                <div class="bg-gray-100 border-t border-gray-200 px-6 py-4 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500 gap-2">
+                    <p class="flex items-center space-x-2">
+                        <span class="inline-block w-2.5 h-2.5 rounded-full bg-green-500"></span>
+                        <span>สตรีมข้อมูลอัตโนมัติ (Live Simulation) ตามออเดอร์ล่าสุด</span>
+                    </p>
+                    <p>ระบบแยกชีทโดยใช้ Logic ของ Google Apps Script เป็นตัวขับเคลื่อน</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: Google Sheets Integration Setup Guide -->
+        <div id="setup-tab" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <!-- Setup Form Panel -->
+                <div class="lg:col-span-1 bg-white rounded-2xl shadow-md border border-hana-light/30 p-6 space-y-6">
+                    <div>
+                        <h3 class="text-lg font-bold text-hana-deep mb-2 flex items-center space-x-2">
+                            <i class="fa-solid fa-screwdriver-wrench"></i>
+                            <span>ข้อมูลเชื่อมต่อ (Webhook)</span>
+                        </h3>
+                        <p class="text-xs text-gray-500">วาง URL ที่ได้จากขั้นตอน Google Apps Script เพื่อให้แอปยิงข้อมูลใบสั่งซื้อตรงเข้าชีทจริงของท่าน</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-hana-deep mb-1">ลิ้งก์ส่งข้อมูล Google Web App URL</label>
+                            <input type="text" id="g-sheet-url" placeholder="https://script.google.com/macros/s/.../exec"
+                                   class="w-full px-3 py-2.5 rounded-xl border border-hana-light focus:outline-none focus:ring-2 focus:ring-hana-primary/50 text-xs font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-hana-deep mb-1">ลิ้งก์หน้า Google Sheets สำหรับเปิดดู (ไม่บังคับ)</label>
+                            <input type="text" id="g-sheet-view-url" placeholder="https://docs.google.com/spreadsheets/d/.../edit"
+                                   class="w-full px-3 py-2.5 rounded-xl border border-hana-light focus:outline-none focus:ring-2 focus:ring-hana-primary/50 text-xs font-mono">
+                        </div>
+
+                        <div class="pt-3 space-y-2">
+                            <button onclick="saveSetupConfig()" class="w-full py-3 bg-hana-deep text-white hover:bg-hana-dark font-bold rounded-xl shadow transition duration-300 flex items-center justify-center space-x-2 text-xs">
+                                <i class="fa-solid fa-floppy-disk"></i>
+                                <span>บันทึกการตั้งค่าเชื่อมต่อ</span>
+                            </button>
+                            <button onclick="clearSetupConfig()" class="w-full py-2.5 border border-red-500 text-red-600 hover:bg-red-50 rounded-xl font-semibold transition duration-300 flex items-center justify-center space-x-2 text-xs">
+                                <i class="fa-solid fa-circle-xmark"></i>
+                                <span>ยกเลิกการเชื่อมต่อชีทจริง</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Instructions Panel -->
+                <div class="lg:col-span-2 bg-white rounded-2xl shadow-md border border-hana-light/30 p-6 md:p-8 space-y-6">
+                    <div class="border-b border-hana-light/30 pb-4">
+                        <h3 class="text-xl font-bold text-hana-deep">วิธีเชื่อมต่อแอปนี้เข้ากับ Google Sheet ของ Hana (ฟรี 100%)</h3>
+                        <p class="text-sm text-gray-500 mt-1">ใช้เวลาเพียง 3 นาทีในการเชื่อมโยงข้อมูลให้ส่งเข้า Google Sheets แท็บแยกหมวดหมู่อัตโนมัติ</p>
+                    </div>
+
+                    <!-- Steps Timeline -->
+                    <div class="space-y-6 text-sm text-gray-700">
+                        <div class="flex items-start space-x-4">
+                            <div class="w-8 h-8 rounded-full bg-hana-primary text-white flex items-center justify-center font-bold flex-shrink-0">1</div>
+                            <div>
+                                <h4 class="font-bold text-hana-deep">สร้าง Google Sheet</h4>
+                                <p class="text-xs text-gray-500 mt-1">
+                                    เข้าสู่ระบบบัญชี Google ของ Hana และกดสร้างตารางคำนวณใหม่ (Google Sheet) ขึ้นมา 1 แผ่น
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-4">
+                            <div class="w-8 h-8 rounded-full bg-hana-primary text-white flex items-center justify-center font-bold flex-shrink-0">2</div>
+                            <div class="w-full">
+                                <h4 class="font-bold text-hana-deep">เปิดตัวแก้โค้ด Apps Script</h4>
+                                <p class="text-xs text-gray-500 mt-1">
+                                    ที่เมนูด้านบนของ Google Sheets ให้เลือกเมนู <strong class="text-hana-deep">ส่วนขยาย (Extensions)</strong> &gt; <strong class="text-hana-deep">Apps Script</strong>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-4">
+                            <div class="w-8 h-8 rounded-full bg-hana-primary text-white flex items-center justify-center font-bold flex-shrink-0">3</div>
+                            <div class="w-full space-y-3">
+                                <h4 class="font-bold text-hana-deep">คัดลอกโค้ดสคริปต์ด้านล่างนี้ไปวาง</h4>
+                                <p class="text-xs text-gray-500">
+                                    ลบโค้ดเริ่มต้นทั้งหมดในไฟล์ `Code.gs` และลอกโค้ดพรีเมียมตัวนี้ไปวางแทนที่:
+                                </p>
+                                
+                                <div class="relative bg-hana-dark rounded-xl p-4 overflow-x-auto max-h-60 text-xs font-mono text-hana-light">
+                                    <button onclick="copyAppsScriptCode()" class="absolute right-3 top-3 bg-hana-primary hover:bg-hana-deep text-white px-3 py-1 rounded-md text-[10px] transition-all flex items-center space-x-1">
+                                        <i class="fa-regular fa-copy"></i>
+                                        <span>Copy Code</span>
+                                    </button>
+                                    <pre id="apps-script-code-block">
+/* โค้ดสำหรับระบบสั่งซื้อสินค้า Hana BKK (สิทธิ์เป็นสาธารณะ) */
+function doPost(e) {
+  try {
+    var data = JSON.parse(e.postData.contents);
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var timestamp = new Date();
+    
+    // วนลูปสินค้าแต่ละรายการในหนึ่งออเดอร์เพื่อแยกหมวดหมู่ตาราง
+    data.items.forEach(function(item) {
+      var sheetName = item.category || "อื่นๆ";
+      var sheet = ss.getSheetByName(sheetName);
+      
+      // หากยังไม่มีแท็บนี้ ระบบจะสร้างแท็บใหม่และใส่หัวคอลัมน์อัตโนมัติ
+      if (!sheet) {
+        sheet = ss.insertSheet(sheetName);
+        sheet.appendRow([
+          "วัน-เวลาที่สั่ง (Timestamp)", 
+          "ชื่อผู้สั่ง", 
+          "แผนก", 
+          "หมวดหมู่หลัก", 
+          "รายการสินค้า", 
+          "จำนวน", 
+          "หน่วยเรียก", 
+          "หมายเหตุ"
+        ]);
+        // ตกแต่งหัวข้อหัวตาราง
+        sheet.getRange(1, 1, 1, 8)
+          .setFontWeight("bold")
+          .setBackgroundColor("#F5EBE0")
+          .setFontColor("#4A3429");
+      }
+      
+      // บันทึกข้อมูลบรรทัดใหม่
+      sheet.appendRow([
+        timestamp,
+        data.requesterName,
+        data.department,
+        item.category,
+        item.itemName,
+        item.quantity,
+        item.unit,
+        item.remarks || ""
+      ]);
+    });
+    
+    return ContentService.createTextOutput(JSON.stringify({
+      "status": "success", 
+      "message": "บันทึกเรียบร้อยลงตารางแบบแยกหมวดหมู่"
+    })).setMimeType(ContentService.MimeType.JSON);
+    
+  } catch(error) {
+    return ContentService.createTextOutput(JSON.stringify({
+      "status": "error", 
+      "message": error.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}</pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-4">
+                            <div class="w-8 h-8 rounded-full bg-hana-primary text-white flex items-center justify-center font-bold flex-shrink-0">4</div>
+                            <div>
+                                <h4 class="font-bold text-hana-deep">ทำการติดตั้งใช้งานเว็บแอป (Deploy Web App)</h4>
+                                <ul class="list-decimal list-inside text-xs text-gray-600 mt-2 space-y-1.5 ml-1">
+                                    <li>กดคลิกปุ่มสีน้ำเงินขวาบน <strong class="text-hana-deep">การตั้งค่าใช้งานจริง (Deploy)</strong> &gt; <strong class="text-hana-deep">การจัดการการใช้งานจริงใหม่ (New deployment)</strong></li>
+                                    <li>เลือกประเภทเป็น <strong class="text-hana-deep">เว็บแอป (Web App)</strong> (รูปไอคอนลูกโลก)</li>
+                                    <li>กรอกรายละเอียดคำอธิบาย: "Hana Ordering System"</li>
+                                    <li>ช่องผู้ดำเนินการติดตั้ง ให้เลือกเป็น: <strong class="text-hana-deep">ฉัน (บัญชีของคุณเอง)</strong></li>
+                                    <li>ช่องผู้มีสิทธิ์เข้าถึงสำคัญมาก ต้องเลือกเป็น: <strong class="text-hana-deep">ทุกคน (Anyone)</strong> (เพื่ออนุญาตให้ฟอร์มนี้ส่งยอดเข้าชีทได้)</li>
+                                    <li>คลิก <strong class="text-hana-deep">การใช้งานจริง (Deploy)</strong> และอนุมัติสิทธิ์ (Authorize access) สำหรับบัญชีของคุณ</li>
+                                    <li>คัดลอก <strong class="text-hana-deep">URL เว็บแอป (Web App URL)</strong> ที่ขึ้นตอนสุดท้าย นำมาวางในกล่องตั้งค่าทางซ้ายมือได้ทันที!</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Universal Footer -->
+    <footer class="bg-hana-dark text-hana-light border-t border-hana-deep py-6 mt-12 text-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-hana-accent"></span>
+                <span class="font-bold text-hana-cream tracking-wide">HANA BKK</span>
+                <span class="text-gray-500">| Internal Portal Version 1.2</span>
+            </div>
+            <p class="text-center sm:text-right">
+                Designed with Warm Tones: Chocolate Brown, Beige, Black, Ivory White. Built for premium operations.
+            </p>
+        </div>
+    </footer>
+
+    <!-- Core Application Logic Script -->
+    <script>
+        // Mock default database with some sample rows
+        let simulatedOrders = [
+            {
+                id: 1,
+                timestamp: "2026-06-04 10:15:32",
+                requesterName: "กุลธิดา นารีรักษ์",
+                department: "Salon",
+                category: "ร้านเสริมสวย",
+                itemName: "น้ำยาย้อมผมสีน้ำตาลเบจเบอร์ 08",
+                quantity: 12,
+                unit: "กล่อง",
+                remarks: "ขอด่วนเพื่อต้อนรับแคมเปญวันเสาร์นี้"
+            },
+            {
+                id: 2,
+                timestamp: "2026-06-04 11:02:10",
+                requesterName: "มานะ ขยันกิจ",
+                department: "Housekeeping",
+                category: "อุปกรณ์ทำความสะอาด",
+                itemName: "สเปรย์ฆ่าเชื้อห้องพักระดับพรีเมียม",
+                quantity: 5,
+                unit: "แกลลอน",
+                remarks: "สั่งเผื่อไว้ใช้ทั้งแผนก"
+            },
+            {
+                id: 3,
+                timestamp: "2026-06-04 14:45:00",
+                requesterName: "นงลักษณ์ หวานเจี๊ยบ",
+                department: "Front",
+                category: "อุปกรณ์สำนักงาน",
+                itemName: "กระดาษถ่ายเอกสาร A4 80 แกรม",
+                quantity: 2,
+                unit: "กล่อง",
+                remarks: "สำหรับแผนกต้อนรับพิมพ์ใบเสร็จ"
+            },
+            {
+                id: 4,
+                timestamp: "2026-06-04 15:20:11",
+                requesterName: "นงลักษณ์ หวานเจี๊ยบ",
+                department: "Front",
+                category: "อื่นๆ",
+                itemName: "แก้วกระดาษลายดอกกล้วยไม้สีพาสเทล",
+                quantity: 250,
+                unit: "ใบ",
+                remarks: "สำหรับจัดเลี้ยงลูกค้า VIP"
+            }
+        ];
+
+        let currentActiveCategoryFilter = 'all';
+
+        // Load configuration from memory or settings
+        let webAppUrl = '';
+        let googleSheetViewUrl = '';
+
+        window.onload = function() {
+            // Retrieve any saved configs from UI variables (mock state persistent for session)
+            webAppUrl = localStorage.getItem('hana_webhook_url') || '';
+            googleSheetViewUrl = localStorage.getItem('hana_sheet_view_url') || '';
+            
+            // Populate config inputs if exists
+            document.getElementById('g-sheet-url').value = webAppUrl;
+            document.getElementById('g-sheet-view-url').value = googleSheetViewUrl;
+            
+            updateConnectionUI();
+            
+            // Check if there are saved simulated orders
+            const savedOrders = localStorage.getItem('hana_simulated_orders');
+            if (savedOrders) {
+                simulatedOrders = JSON.parse(savedOrders);
+            }
+            
+            renderSimulatedTable();
+        }
+
+        // --- Tab Management Logic ---
+        function switchTab(tabId) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            // Show target tab
+            document.getElementById(tabId).classList.remove('hidden');
+
+            // Reset navigation styles
+            const navButtons = [
+                { id: 'btn-order-tab', key: 'order-tab' },
+                { id: 'btn-sheets-tab', key: 'sheets-tab' },
+                { id: 'btn-setup-tab', key: 'setup-tab' }
+            ];
+
+            navButtons.forEach(btnInfo => {
+                const btn = document.getElementById(btnInfo.id);
+                if (btn) {
+                    if (btnInfo.key === tabId) {
+                        btn.className = "px-4 py-2 rounded-lg bg-hana-primary text-white text-sm font-medium transition duration-300 flex items-center space-x-2";
+                    } else {
+                        btn.className = "px-4 py-2 rounded-lg text-hana-light hover:text-white hover:bg-hana-deep text-sm font-medium transition duration-300 flex items-center space-x-2";
+                    }
+                }
+            });
+        }
+
+        // Mobile Menu Toggling
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        if (mobileMenuBtn) {
+            mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+        }
+
+        function toggleMobileMenu() {
+            if (mobileMenu) {
+                mobileMenu.classList.toggle('hidden');
+            }
+        }
+
+        // --- Form Row Addition Logic ---
+        function addItemRow() {
+            const container = document.getElementById('items-container');
+            const rowCount = container.children.length;
+
+            const div = document.createElement('div');
+            div.className = "item-card bg-hana-soft/50 p-4 rounded-xl border border-hana-light/30 relative group transition hover:border-hana-accent animate-fadeIn";
+            div.innerHTML = `
+                <div class="absolute right-3 top-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button type="button" onclick="removeItemRow(this)" class="text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-red-50" title="ลบรายการนี้">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                    <div class="md:col-span-5">
+                        <label class="block text-xs font-semibold text-hana-primary mb-1">ชื่อสินค้า / อุปกรณ์ที่ต้องการ <span class="text-red-500">*</span></label>
+                        <input type="text" required placeholder="ระบุชื่อสิ่งของ เช่น น้ำยาเช็ดพื้นกลิ่นลาเวนเดอร์" 
+                               class="item-name w-full px-3 py-2 rounded-lg border border-hana-light focus:outline-none focus:ring-1 focus:ring-hana-primary bg-white text-sm">
+                    </div>
+                    <div class="md:col-span-3">
+                        <label class="block text-xs font-semibold text-hana-primary mb-1">ประเภท <span class="text-red-500">*</span></label>
+                        <select required class="item-category w-full px-3 py-2 rounded-lg border border-hana-light focus:outline-none focus:ring-1 focus:ring-hana-primary bg-white text-sm">
+                            <option value="" disabled selected>เลือกประเภท...</option>
+                            <option value="อุปกรณ์ทำความสะอาด">อุปกรณ์ทำความสะอาด</option>
+                            <option value="ร้านเสริมสวย">ร้านเสริมสวย (Salon)</option>
+                            <option value="อุปกรณ์สำนักงาน">อุปกรณ์สำนักงาน</option>
+                            <option value="อื่นๆ">อื่นๆ</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-semibold text-hana-primary mb-1">จำนวน <span class="text-red-500">*</span></label>
+                        <input type="number" required min="1" value="1" 
+                               class="item-qty w-full px-3 py-2 rounded-lg border border-hana-light focus:outline-none focus:ring-1 focus:ring-hana-primary bg-white text-sm text-center">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-semibold text-hana-primary mb-1">หน่วยเรียก <span class="text-red-500">*</span></label>
+                        <input type="text" required placeholder="ชิ้น,ขวด,กล่อง" 
+                               class="item-unit w-full px-3 py-2 rounded-lg border border-hana-light focus:outline-none focus:ring-1 focus:ring-hana-primary bg-white text-sm text-center">
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <label class="block text-[11px] font-semibold text-hana-accent mb-0.5">หมายเหตุเพิ่มเติม (หากมี)</label>
+                    <input type="text" placeholder="ระบุลายละเอียดเพิ่มเติมที่ต้องการระบุเจาะจง" 
+                           class="item-remarks w-full px-3 py-1.5 rounded-lg border border-hana-light/60 focus:outline-none focus:ring-1 focus:ring-hana-primary bg-white text-xs">
+                </div>
+                <div class="mt-3 flex justify-end md:hidden">
+                    <button type="button" onclick="removeItemRow(this)" class="text-red-500 text-xs px-2 py-1 rounded border border-red-200 hover:bg-red-50 flex items-center space-x-1">
+                        <i class="fa-solid fa-trash-can"></i>
+                        <span>ลบรายการสินค้า</span>
+                    </button>
+                </div>
+            `;
+            container.appendChild(div);
+            updateItemCountBadge();
+        }
+
+        function removeItemRow(btnElement) {
+            const container = document.getElementById('items-container');
+            if (container.children.length > 1) {
+                // Find parent card and remove
+                const card = btnElement.closest('.item-card');
+                card.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    card.remove();
+                    updateItemCountBadge();
+                }, 200);
+            } else {
+                showToast("คุณจำเป็นต้องระบุรายการของอย่างน้อย 1 อย่าง", "warning");
+            }
+        }
+
+        function updateItemCountBadge() {
+            const count = document.getElementById('items-container').children.length;
+            document.getElementById('item-count-badge').innerText = `รวม ${count} รายการ`;
+        }
+
+        // --- Toast Alert Notifications System ---
+        function showToast(message, type = "success") {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            let bgClass = "bg-hana-dark border-hana-accent text-white";
+            let iconClass = "fa-circle-check text-hana-accent";
+            
+            if (type === "success") {
+                bgClass = "bg-[#2E1F18] border-green-600 text-[#FAF8F5]";
+                iconClass = "fa-circle-check text-green-500";
+            } else if (type === "warning") {
+                bgClass = "bg-yellow-950 border-yellow-600 text-yellow-50";
+                iconClass = "fa-circle-exclamation text-yellow-500";
+            } else if (type === "error") {
+                bgClass = "bg-red-950 border-red-600 text-red-100";
+                iconClass = "fa-circle-xmark text-red-500";
+            }
+            
+            toast.className = `p-4 rounded-xl border-l-4 ${bgClass} shadow-xl flex items-start space-x-3 transition-all duration-300 transform translate-x-12 opacity-0 text-sm`;
+            toast.innerHTML = `
+                <i class="fa-solid ${iconClass} text-lg mt-0.5"></i>
+                <div class="flex-grow">
+                    <p class="font-semibold">${message}</p>
+                </div>
+                <button onclick="this.parentElement.remove()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            `;
+            
+            container.appendChild(toast);
+            
+            // Animate In
+            setTimeout(() => {
+                toast.classList.remove('translate-x-12', 'opacity-0');
+            }, 10);
+            
+            // Auto Remove after 5 seconds
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => { toast.remove(); }, 300);
+            }, 5000);
+        }
+
+        // --- Form Submission Logic ---
+        function submitForm(event) {
+            event.preventDefault();
+            
+            const requesterName = document.getElementById('req-name').value.trim();
+            const deptCode = document.getElementById('req-dept').value;
+            let departmentLabel = 'Salon';
+            if (deptCode === 'front') departmentLabel = 'Front';
+            if (deptCode === 'housekeeping') departmentLabel = 'Housekeeping';
+
+            // Extract all items from dynamic cards
+            const items = [];
+            const itemCards = document.querySelectorAll('.item-card');
+            
+            itemCards.forEach(card => {
+                const itemName = card.querySelector('.item-name').value.trim();
+                const category = card.querySelector('.item-category').value;
+                const quantity = parseInt(card.querySelector('.item-qty').value);
+                const unit = card.querySelector('.item-unit').value.trim();
+                const remarks = card.querySelector('.item-remarks').value.trim();
+                
+                items.push({
+                    itemName,
+                    category,
+                    quantity,
+                    unit,
+                    remarks
+                });
+            });
+
+            if (items.length === 0) {
+                showToast("ไม่พบรายการที่จะสั่งซื้อ กรุณาเพิ่มรายการสินค้า", "warning");
+                return;
+            }
+
+            const timestamp = getFormattedTimestamp();
+
+            // Prepare payload
+            const payload = {
+                requesterName: requesterName,
+                department: departmentLabel,
+                items: items
+            };
+
+            // 1. SAVE TO LOCAL SIMULATION ALWAYS (To give immediate visual feedback)
+            items.forEach(item => {
+                simulatedOrders.unshift({
+                    id: Date.now() + Math.random(),
+                    timestamp: timestamp,
+                    requesterName: requesterName,
+                    department: departmentLabel,
+                    category: item.category,
+                    itemName: item.itemName,
+                    quantity: item.quantity,
+                    unit: item.unit,
+                    remarks: item.remarks
+                });
+            });
+
+            // Save state to persist simulated entries
+            localStorage.setItem('hana_simulated_orders', JSON.stringify(simulatedOrders));
+            renderSimulatedTable();
+
+            // 2. CHECK IF GOOGLE SHEET WEBHOOK IS CONFIGURED
+            if (webAppUrl && webAppUrl.startsWith('http')) {
+                showToast("กำลังส่งข้อมูลออเดอร์ไปยัง Google Sheets จริงของท่าน...", "warning");
+                
+                // Use fetch to post data to the user's Web App URL
+                // Using mode: 'no-cors' is common for Google Apps Scripts as they do not return CORS headers by default
+                fetch(webAppUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                })
+                .then(() => {
+                    showToast(`ส่งข้อมูลเข้าตารางสตรีมสำเร็จ! (${items.length} รายการ)`, "success");
+                    resetForm();
+                })
+                .catch(err => {
+                    console.error("Sheet Error:", err);
+                    showToast("ไม่สามารถส่งเข้าชีทจริงได้ กรุณาตรวจความถูกต้องของ Web App URL และการ Deploy", "error");
+                });
+            } else {
+                // Simulator only success
+                showToast(`บันทึกเข้าระบบจำลองเรียบร้อย! (${items.length} รายการ) สลับไปที่แท็บตารางเพื่อดูผลงาน`, "success");
+                resetForm();
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('orderForm').reset();
+            // Reset to only 1 item card
+            const container = document.getElementById('items-container');
+            container.innerHTML = `
+                <div class="item-card bg-hana-soft/50 p-4 rounded-xl border border-hana-light/30 relative group transition hover:border-hana-accent">
+                    <div class="absolute right-3 top-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button type="button" onclick="removeItemRow(this)" class="text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-red-50" title="ลบรายการนี้">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                        <div class="md:col-span-5">
+                            <label class="block text-xs font-semibold text-hana-primary mb-1">ชื่อสินค้า / อุปกรณ์ที่ต้องการ <span class="text-red-500">*</span></label>
+                            <input type="text" required placeholder="ระบุชื่อสิ่งของ เช่น แชมพูขวดใหญ่, ทิชชู่ม้วนหนา" 
+                                   class="item-name w-full px-3 py-2 rounded-lg border border-hana-light focus:outline-none focus:ring-1 focus:ring-hana-primary bg-white text-sm">
+                        </div>
+                        <div class="md:col-span-3">
+                            <label class="block text-xs font-semibold text-hana-primary mb-1">ประเภท <span class="text-red-500">*</span></label>
+                            <select required class="item-category w-full px-3 py-2 rounded-lg border border-hana-light focus:outline-none focus:ring-1 focus:ring-hana-primary bg-white text-sm">
+                                <option value="" disabled selected>เลือกประเภท...</option>
+                                <option value="อุปกรณ์ทำความสะอาด">อุปกรณ์ทำความสะอาด</option>
+                                <option value="ร้านเสริมสวย">ร้านเสริมสวย (Salon)</option>
+                                <option value="อุปกรณ์สำนักงาน">อุปกรณ์สำนักงาน</option>
+                                <option value="อื่นๆ">อื่นๆ</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-semibold text-hana-primary mb-1">จำนวน <span class="text-red-500">*</span></label>
+                            <input type="number" required min="1" value="1" 
+                                   class="item-qty w-full px-3 py-2 rounded-lg border border-hana-light focus:outline-none focus:ring-1 focus:ring-hana-primary bg-white text-sm text-center">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-semibold text-hana-primary mb-1">หน่วยเรียก <span class="text-red-500">*</span></label>
+                            <input type="text" required placeholder="ชิ้น,ขวด,กล่อง" 
+                                   class="item-unit w-full px-3 py-2 rounded-lg border border-hana-light focus:outline-none focus:ring-1 focus:ring-hana-primary bg-white text-sm text-center">
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <label class="block text-[11px] font-semibold text-hana-accent mb-0.5">หมายเหตุเพิ่มเติม (หากมี)</label>
+                        <input type="text" placeholder="เช่น ดำเนินการด่วน, ขอเฉพาะแบรนด์เดิม" 
+                               class="item-remarks w-full px-3 py-1.5 rounded-lg border border-hana-light/60 focus:outline-none focus:ring-1 focus:ring-hana-primary bg-white text-xs">
+                    </div>
+                </div>
+            `;
+            updateItemCountBadge();
+        }
+
+        // --- Simulated Sheets Render Logic ---
+        function selectSheetCategory(category) {
+            currentActiveCategoryFilter = category;
+            
+            // Set labels
+            let textLabel = "รวมออเดอร์ทั้งหมด";
+            if (category !== 'all') {
+                textLabel = `ตารางชีทเฉพาะ "${category}"`;
+            }
+            document.getElementById('current-category-label').innerText = textLabel;
+
+            // Highlight sub tabs
+            const subTabs = [
+                { id: 'sheet-btn-all', key: 'all' },
+                { id: 'sheet-btn-cleaning', key: 'อุปกรณ์ทำความสะอาด' },
+                { id: 'sheet-btn-salon', key: 'ร้านเสริมสวย' },
+                { id: 'sheet-btn-office', key: 'อุปกรณ์สำนักงาน' },
+                { id: 'sheet-btn-others', key: 'อื่นๆ' }
+            ];
+
+            subTabs.forEach(tab => {
+                const element = document.getElementById(tab.id);
+                if (element) {
+                    if (tab.key === category) {
+                        element.className = "sheet-tab-btn active px-4 py-2 bg-white text-gray-800 border-t-2 border-[#107C41] text-xs font-semibold rounded-t-lg transition focus:outline-none shadow-sm";
+                    } else {
+                        element.className = "sheet-tab-btn px-4 py-2 text-gray-500 hover:bg-white/50 text-xs font-semibold rounded-t-lg transition focus:outline-none";
+                    }
+                }
+            });
+
+            renderSimulatedTable();
+        }
+
+        function renderSimulatedTable() {
+            const tbody = document.getElementById('simulated-sheets-tbody');
+            tbody.innerHTML = '';
+
+            // Filter data according to tab selection
+            let filtered = simulatedOrders;
+            if (currentActiveCategoryFilter !== 'all') {
+                filtered = simulatedOrders.filter(ord => ord.category === currentActiveCategoryFilter);
+            }
+
+            // Update row counter badge
+            document.getElementById('row-count-text').innerText = `พบข้อมูล ${filtered.length} แถวตาราง`;
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="9" class="text-center py-12 text-gray-400 font-sans">
+                            <div class="flex flex-col items-center justify-center space-y-2">
+                                <i class="fa-solid fa-folder-open text-3xl"></i>
+                                <p>ไม่พบรายการสินค้าในหมวดหมู่นี้</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            filtered.forEach((order, index) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-50 transition duration-150";
+                
+                // Color badges for departments
+                let deptBadgeColor = "bg-gray-100 text-gray-800";
+                if (order.department.toLowerCase() === 'salon') deptBadgeColor = "bg-[#D9C5B2] text-hana-deep";
+                else if (order.department.toLowerCase() === 'front') deptBadgeColor = "bg-amber-100 text-amber-900";
+                else if (order.department.toLowerCase() === 'housekeeping') deptBadgeColor = "bg-[#FAF8F5] border border-hana-light text-hana-primary";
+
+                // Category colors
+                let catBadgeColor = "bg-gray-100 text-gray-800";
+                if (order.category === 'อุปกรณ์ทำความสะอาด') catBadgeColor = "bg-blue-50 text-blue-800 border border-blue-200";
+                else if (order.category === 'ร้านเสริมสวย') catBadgeColor = "bg-purple-50 text-purple-800 border border-purple-200";
+                else if (order.category === 'อุปกรณ์สำนักงาน') catBadgeColor = "bg-emerald-50 text-emerald-800 border border-emerald-200";
+
+                tr.innerHTML = `
+                    <td class="px-4 py-3 border-r border-gray-100 text-center text-gray-400 font-sans font-bold">${index + 1}</td>
+                    <td class="px-4 py-3 border-r border-gray-100 whitespace-nowrap text-hana-primary font-semibold">${order.timestamp}</td>
+                    <td class="px-4 py-3 border-r border-gray-100 font-sans text-gray-900 font-medium">${order.requesterName}</td>
+                    <td class="px-4 py-3 border-r border-gray-100 font-sans text-center">
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider ${deptBadgeColor}">${order.department}</span>
+                    </td>
+                    <td class="px-4 py-3 border-r border-gray-100 font-sans text-center">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-semibold ${catBadgeColor}">${order.category}</span>
+                    </td>
+                    <td class="px-4 py-3 border-r border-gray-100 font-sans text-gray-900 font-bold">${order.itemName}</td>
+                    <td class="px-4 py-3 border-r border-gray-100 text-center font-bold text-gray-900">${order.quantity}</td>
+                    <td class="px-4 py-3 border-r border-gray-100 text-center text-gray-600 font-sans">${order.unit}</td>
+                    <td class="px-4 py-3 text-gray-500 font-sans italic">${order.remarks || '-'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function clearSimulatedOrders() {
+            if (confirm("คุณแน่ใจหรือไม่ที่จะล้างตารางจำลองของ Hana? ข้อมูลตัวอย่างที่สั่งทั้งหมดจะหายไป")) {
+                simulatedOrders = [];
+                localStorage.removeItem('hana_simulated_orders');
+                renderSimulatedTable();
+                showToast("ล้างตารางจำลองเรียบร้อยแล้ว", "success");
+            }
+        }
+
+        // --- Download simulated data as CSV ---
+        function downloadAsCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; // Adding BOM for Thai support in Excel
+            
+            // CSV Headers
+            csvContent += "ลำดับ,วันเวลาสั่งซื้อ (Timestamp),ผู้สั่ง,แผนก,หมวดหมู่ตาราง,ชื่อรายการ,จำนวน,หน่วยเรียก,หมายเหตุ\n";
+            
+            let targetList = simulatedOrders;
+            if (currentActiveCategoryFilter !== 'all') {
+                targetList = simulatedOrders.filter(ord => ord.category === currentActiveCategoryFilter);
+            }
+
+            if (targetList.length === 0) {
+                showToast("ไม่มีข้อมูลในตารางที่จะดาวน์โหลด", "warning");
+                return;
+            }
+
+            targetList.forEach((ord, index) => {
+                const row = [
+                    index + 1,
+                    `"${ord.timestamp}"`,
+                    `"${ord.requesterName.replace(/"/g, '""')}"`,
+                    `"${ord.department}"`,
+                    `"${ord.category}"`,
+                    `"${ord.itemName.replace(/"/g, '""')}"`,
+                    ord.quantity,
+                    `"${ord.unit}"`,
+                    `"${(ord.remarks || '').replace(/"/g, '""')}"`
+                ].join(",");
+                csvContent += row + "\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            
+            const filename = currentActiveCategoryFilter === 'all' 
+                ? "Hana_BKK_Orders_All.csv" 
+                : `Hana_BKK_Orders_${currentActiveCategoryFilter}.csv`;
+                
+            link.setAttribute("download", filename);
+            document.body.appendChild(link); // Required for FF
+            link.click();
+            document.body.removeChild(link);
+            
+            showToast("ส่งออกตารางเป็นไฟล์ CSV เรียบร้อยแล้วเพื่อใช้เปิดใน Excel", "success");
+        }
+
+        // --- Helper Function for Dates ---
+        function getFormattedTimestamp() {
+            const d = new Date();
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const date = String(d.getDate()).padStart(2, '0');
+            const hours = String(d.getHours()).padStart(2, '0');
+            const minutes = String(d.getMinutes()).padStart(2, '0');
+            const seconds = String(d.getSeconds()).padStart(2, '0');
+            return `${year}-${month}-${date} ${hours}:${minutes}:${seconds}`;
+        }
+
+        // --- Settings Connections Logic ---
+        function saveSetupConfig() {
+            const urlInput = document.getElementById('g-sheet-url').value.trim();
+            const viewUrlInput = document.getElementById('g-sheet-view-url').value.trim();
+
+            if (urlInput && !urlInput.startsWith('http')) {
+                showToast("กรุณาใส่ Web App URL ที่ถูกต้อง (ขึ้นต้นด้วย https://)", "error");
+                return;
+            }
+
+            webAppUrl = urlInput;
+            googleSheetViewUrl = viewUrlInput;
+
+            localStorage.setItem('hana_webhook_url', webAppUrl);
+            localStorage.setItem('hana_sheet_view_url', googleSheetViewUrl);
+
+            updateConnectionUI();
+            showToast("บันทึกการเชื่อมโยง Google Sheets จริงเรียบร้อยแล้ว!", "success");
+            
+            // Switch back to form so they can try it
+            switchTab('order-tab');
+        }
+
+        function clearSetupConfig() {
+            webAppUrl = '';
+            googleSheetViewUrl = '';
+            
+            localStorage.removeItem('hana_webhook_url');
+            localStorage.removeItem('hana_sheet_view_url');
+            
+            document.getElementById('g-sheet-url').value = '';
+            document.getElementById('g-sheet-view-url').value = '';
+
+            updateConnectionUI();
+            showToast("ยกเลิกการเชื่อมต่อเรียบร้อยแล้ว กลับสู่โหมดตารางจำลอง", "warning");
+        }
+
+        function updateConnectionUI() {
+            const connStatus = document.getElementById('connection-status');
+            const configuredStatus = document.getElementById('sheet-configured-status');
+            const linkBtn = document.getElementById('configured-sheet-url');
+
+            if (webAppUrl && webAppUrl.startsWith('http')) {
+                // Connected State
+                connStatus.classList.add('hidden');
+                configuredStatus.classList.remove('hidden');
+                
+                if (googleSheetViewUrl) {
+                    linkBtn.href = googleSheetViewUrl;
+                    linkBtn.classList.remove('pointer-events-none', 'opacity-50');
+                    linkBtn.querySelector('span').innerText = "เปิดไปหน้า Google Sheets ของ Hana";
+                } else {
+                    linkBtn.href = "#";
+                    linkBtn.classList.add('pointer-events-none', 'opacity-50');
+                    linkBtn.querySelector('span').innerText = "ไม่ได้ใส่ลิ้งก์สำหรับเปิดชีท (ใส่เพิ่มในตารางตั้งค่า)";
+                }
+            } else {
+                // Not Connected (Simulated) State
+                connStatus.classList.remove('hidden');
+                configuredStatus.classList.add('hidden');
+            }
+        }
+
+        function copyAppsScriptCode() {
+            const codeText = document.getElementById('apps-script-code-block').innerText;
+            
+            // Safe copy for browser iframe sandbox
+            const textarea = document.createElement("textarea");
+            textarea.value = codeText;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+
+            showToast("ก๊อปปี้โค้ด Apps Script ลงคลิปบอร์ดแล้ว!", "success");
+        }
+    </script>
+</body>
+</html>
